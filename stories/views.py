@@ -106,3 +106,44 @@ def react_prediction_comment(request, slug):
     comment.likes_count += 1
     comment.save()
     return redirect('stories:question_detail', slug=comment.question.slug)
+
+
+# Add to views.py
+def home(request):
+    # Get latest stories with parts count
+    latest_stories = Story.objects.all().annotate(
+        parts_count=Count('parts')
+    ).order_by('-created_at')[:6]
+
+    # Get trending stories (most likes on parts)
+    trending_stories = Story.objects.all().annotate(
+        total_likes=Sum('parts__likes_count'),
+        parts_count=Count('parts')
+    ).order_by('-total_likes')[:3]
+
+    # Get latest prediction questions with comments count
+    latest_questions = PredictionQuestion.objects.all().annotate(
+        comments_count=Count('comments')
+    ).order_by('-created_at')[:6]
+
+    # Get trending questions (most comments)
+    trending_questions = PredictionQuestion.objects.all().annotate(
+        comments_count=Count('comments')
+    ).order_by('-comments_count')[:3]
+
+    # Get some statistics
+    total_stories = Story.objects.count()
+    total_predictions = PredictionQuestion.objects.count()
+    total_contributions = StoryPart.objects.count() + PredictionComment.objects.count()
+
+    context = {
+        'latest_stories': latest_stories,
+        'trending_stories': trending_stories,
+        'latest_questions': latest_questions,
+        'trending_questions': trending_questions,
+        'total_stories': total_stories,
+        'total_predictions': total_predictions,
+        'total_contributions': total_contributions,
+    }
+
+    return render(request, 'hub/home.html', context)

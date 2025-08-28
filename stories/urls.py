@@ -5,6 +5,7 @@ app_name = 'stories'
 
 urlpatterns = [
     # ---------- Stories ----------
+    path('', views.home, name='home'),
     path('stories/', views.story_list, name='story_list'),          # List all stories
     path('stories/create/', views.create_story, name='create_story'), # Create a new story
     path('stories/<slug:slug>/', views.story_detail, name='story_detail'), # View story with parts

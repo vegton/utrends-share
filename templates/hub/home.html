@@ -1,1 +1,445 @@
-{% extends 'hub/base.html' %}
+{% extends "hub/base.html" %}
+{% load static humanize %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section mb-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-white mb-4">Create, Collaborate, Predict</h1>
+                <p class="lead text-white mb-4">Join our community of storytellers and predictors. Create amazing stories together or share your predictions about future events.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'stories:create_story' %}" class="btn btn-light btn-lg px-4">
+                        <i class="bi bi-journal-plus me-2"></i>Start a Story
+                    </a>
+                    <a href="{% url 'stories:create_question' %}" class="btn btn-outline-light btn-lg px-4">
+                        <i class="bi bi-question-circle me-2"></i>Ask a Question
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="position-relative">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23ffffff' opacity='0.2' rx='20'/%3E%3Cpath fill='%23ffffff' d='M100,100 Q200,50 300,100 T500,100' stroke='%237B68EE' stroke-width='3' fill='none'/%3E%3Ccircle cx='100' cy='100' r='10' fill='%237B68EE'/%3E%3Ccircle cx='300' cy='100' r='10' fill='%237B68EE'/%3E%3Ccircle cx='500' cy='100' r='10' fill='%237B68EE'/%3E%3C/svg%3E"
+                         alt="Collaboration Illustration" class="img-fluid floating">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="container mb-5">
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm py-4">
+                <div class="card-body">
+                    <i class="bi bi-journal-bookmark display-4 text-primary mb-3"></i>
+                    <h3 class="fw-bold">{{ total_stories|intcomma }}</h3>
+                    <p class="text-muted">Active Stories</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm py-4">
+                <div class="card-body">
+                    <i class="bi bi-chat-square-text display-4 text-info mb-3"></i>
+                    <h3 class="fw-bold">{{ total_predictions|intcomma }}</h3>
+                    <p class="text-muted">Prediction Questions</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm py-4">
+                <div class="card-body">
+                    <i class="bi bi-people display-4 text-success mb-3"></i>
+                    <h3 class="fw-bold">{{ total_contributions|intcomma }}</h3>
+                    <p class="text-muted">Total Contributions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Stories Section -->
+<section class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 fw-bold">Latest Stories</h2>
+        <a href="{% url 'stories:story_list' %}" class="btn btn-outline-primary">
+            View All <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for story in latest_stories %}
+        <div class="col">
+            <div class="card story-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-primary rounded-pill">{{ story.get_category_display }}</span>
+                        <small class="text-muted">{{ story.created_at|naturaltime }}</small>
+                    </div>
+
+                    <h5 class="card-title mb-3">
+                        <a href="{% url 'stories:story_detail' story.slug %}" class="text-decoration-none text-dark stretched-link">
+                            {{ story.title }}
+                        </a>
+                    </h5>
+
+                    <p class="card-text text-muted small mb-3">
+                        {% with first_part=story.parts.first %}
+                        {{ first_part.text|truncatewords:15 }}
+                        {% endwith %}
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-sm bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-2">
+                                <i class="bi bi-person-fill small"></i>
+                            </div>
+                            <small class="fw-semibold">
+                                {% if story.created_by %}
+                                    {{ story.created_by.username }}
+                                {% else %}
+                                    Anonymous
+                                {% endif %}
+                            </small>
+                        </div>
+
+                        <small class="text-muted">
+                            <i class="bi bi-text-paragraph me-1"></i>
+                            {{ story.parts_count }} parts
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-journal-x display-1 text-muted mb-4"></i>
+                    <h3 class="text-muted">No stories yet</h3>
+                    <p class="text-muted mb-4">Be the first to create an amazing story!</p>
+                    <a href="{% url 'stories:create_story' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Create Your First Story
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Trending Stories Section -->
+<section class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 fw-bold">Trending Stories</h2>
+        <span class="badge bg-warning">Most Liked</span>
+    </div>
+
+    <div class="row">
+        {% for story in trending_stories %}
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <span class="badge bg-primary rounded-pill mb-2">{{ story.get_category_display }}</span>
+                    <h5 class="card-title">
+                        <a href="{% url 'stories:story_detail' story.slug %}" class="text-decoration-none text-dark">
+                            {{ story.title }}
+                        </a>
+                    </h5>
+                    <p class="card-text text-muted small">
+                        {% with first_part=story.parts.first %}
+                        {{ first_part.text|truncatewords:20 }}
+                        {% endwith %}
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent border-0 d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="bi bi-heart-fill text-danger me-1"></i>
+                        {{ story.total_likes|default:0 }} likes
+                    </small>
+                    <small class="text-muted">
+                        <i class="bi bi-text-paragraph me-1"></i>
+                        {{ story.parts_count }} parts
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                No trending stories yet. Create a story and get likes to appear here!
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Latest Questions Section -->
+<section class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 fw-bold">Latest Predictions</h2>
+        <a href="{% url 'stories:question_list' %}" class="btn btn-outline-info">
+            View All <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% for question in latest_questions %}
+        <div class="col">
+            <div class="card question-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-info rounded-pill">{{ question.get_category_display }}</span>
+                        <small class="text-muted">{{ question.created_at|naturaltime }}</small>
+                    </div>
+
+                    <h5 class="card-title mb-3">
+                        <a href="{% url 'stories:question_detail' question.slug %}" class="text-decoration-none text-dark stretched-link">
+                            {{ question.question }}
+                        </a>
+                    </h5>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-sm bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-2">
+                                <i class="bi bi-person-fill small"></i>
+                            </div>
+                            <small class="fw-semibold">
+                                {% if question.created_by %}
+                                    {{ question.created_by.username }}
+                                {% else %}
+                                    Anonymous
+                                {% endif %}
+                            </small>
+                        </div>
+
+                        <small class="text-muted">
+                            <i class="bi bi-chat-square-text me-1"></i>
+                            {{ question.comments_count }} predictions
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-question-circle display-1 text-muted mb-4"></i>
+                    <h3 class="text-muted">No questions yet</h3>
+                    <p class="text-muted mb-4">Be the first to ask a prediction question!</p>
+                    <a href="{% url 'stories:create_question' %}" class="btn btn-info">
+                        <i class="bi bi-plus-circle me-2"></i>Ask Your First Question
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Trending Questions Section -->
+<section class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 fw-bold">Trending Predictions</h2>
+        <span class="badge bg-warning">Most Discussed</span>
+    </div>
+
+    <div class="row">
+        {% for question in trending_questions %}
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <span class="badge bg-info rounded-pill mb-2">{{ question.get_category_display }}</span>
+                    <h5 class="card-title">
+                        <a href="{% url 'stories:question_detail' question.slug %}" class="text-decoration-none text-dark">
+                            {{ question.question }}
+                        </a>
+                    </h5>
+                    <p class="card-text">
+                        <span class="badge bg-light text-dark">
+                            <i class="bi bi-chat-square-text me-1"></i>
+                            {{ question.comments_count }} predictions
+                        </span>
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <small class="text-muted">
+                        Asked by
+                        {% if question.created_by %}
+                            {{ question.created_by.username }}
+                        {% else %}
+                            Anonymous
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                No trending questions yet. Ask a question and get predictions to appear here!
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 text-center h-100">
+                    <div class="card-body">
+                        <div class="icon-lg bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                            <i class="bi bi-journal-plus fs-1"></i>
+                        </div>
+                        <h5 class="card-title">Create</h5>
+                        <p class="card-text">Start a new story or ask a prediction question to get the community involved.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 text-center h-100">
+                    <div class="card-body">
+                        <div class="icon-lg bg-info bg-opacity-10 text-info rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                            <i class="bi bi-people fs-1"></i>
+                        </div>
+                        <h5 class="card-title">Collaborate</h5>
+                        <p class="card-text">Work with others to build stories piece by piece or share your predictions.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 text-center h-100">
+                    <div class="card-body">
+                        <div class="icon-lg bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                            <i class="bi bi-star fs-1"></i>
+                        </div>
+                        <h5 class="card-title">Discover</h5>
+                        <p class="card-text">Explore amazing stories and predictions created by our community.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="container py-5">
+    <div class="card border-0 shadow-lg bg-primary text-white">
+        <div class="card-body p-5 text-center">
+            <h2 class="card-title mb-4">Ready to Join Our Community?</h2>
+            <p class="card-text lead mb-4">Start creating, collaborating, and predicting today.</p>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                <a href="{% url 'stories:create_story' %}" class="btn btn-light btn-lg px-4">
+                    <i class="bi bi-journal-plus me-2"></i>Start a Story
+                </a>
+                <a href="{% url 'stories:create_question' %}" class="btn btn-outline-light btn-lg px-4">
+                    <i class="bi bi-question-circle me-2"></i>Ask a Question
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #7B68EE 0%, #6A5ACD 100%);
+        color: white;
+        border-radius: 0 0 40px 40px;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,192C1248,192,1344,128,1392,96L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        background-size: cover;
+        background-position: center;
+    }
+
+    .min-vh-75 {
+        min-height: 75vh;
+    }
+
+    .floating {
+        animation: floating 3s ease-in-out infinite;
+    }
+
+    @keyframes floating {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
+
+    .avatar-sm {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .icon-lg {
+        width: 80px;
+        height: 80px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .story-card {
+        transition: all 0.3s ease;
+    }
+
+    .story-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(123, 104, 238, 0.15) !important;
+    }
+
+    .question-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid #0dcaf0;
+    }
+
+    .question-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(13, 202, 240, 0.15) !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to cards on hover
+        document.querySelectorAll('.story-card, .question-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
+{% endblock %}
