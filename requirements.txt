@@ -1,0 +1,10 @@
+asgiref==3.9.1
+Django==5.2.5
+django-allauth==65.11.1
+django-crispy-forms==2.4
+django-filter==25.1
+django-humanize==0.1.2
+djangorestframework==3.16.1
+humanize==4.13.0
+pillow==11.3.0
+sqlparse==0.5.3
