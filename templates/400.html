@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bad Request - Vegton{% endblock %}
+
+{% block content %}
+<section class="py-5 text-center">
+    <div class="container">
+        <h1 class="display-4 text-danger">400 - Bad Request</h1>
+        <p class="lead">Oops! There was a problem with your request.</p>
+        <p>Try checking your inputs or refreshing the page. If the issue persists, reach out to us.</p>
+        <p><a href="mailto:info@vegton.com">info@vegton.com</a></p>
+        <a href="/" class="btn btn-outline-dark mt-3"><i class="bi bi-arrow-left-circle"></i> Back to Home</a>
+    </div>
+</section>
+{% endblock %}

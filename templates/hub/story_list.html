@@ -1,0 +1,227 @@
+{% extends 'hub/base.html' %}
+{% load humanize %}
+{% block title %}Stories - Story & Prediction Hub{% endblock %}
+
+{% block content %}
+<div class="hero-section mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-3">Discover Captivating Stories</h1>
+                <p class="lead mb-4">Join our community of storytellers and contribute to amazing collaborative tales</p>
+                <a href="{% url 'stories:create_story' %}" class="btn btn-light btn-lg px-4 py-2">
+                    <i class="bi bi-plus-circle me-2"></i>Start a New Story
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <!-- Search and Filters Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form method="get" class="row g-3 align-items-end">
+                        <div class="col-md-5">
+                            <label for="searchInput" class="form-label fw-semibold">Search Stories</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0">
+                                    <i class="bi bi-search text-muted"></i>
+                                </span>
+                                <input type="text" name="q" value="{{ request.GET.q }}"
+                                       class="form-control border-start-0" id="searchInput"
+                                       placeholder="Search by title, author, or content...">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="categorySelect" class="form-label fw-semibold">Category</label>
+                            <select name="category" class="form-select" id="categorySelect">
+                                <option value="">All categories</option>
+                                <option value="adventure" {% if request.GET.category == 'adventure' %}selected{% endif %}>Adventure</option>
+                                <option value="romance" {% if request.GET.category == 'romance' %}selected{% endif %}>Romance</option>
+                                <option value="horror" {% if request.GET.category == 'horror' %}selected{% endif %}>Horror</option>
+                                <option value="comedy" {% if request.GET.category == 'comedy' %}selected{% endif %}>Comedy</option>
+                                <option value="fantasy" {% if request.GET.category == 'fantasy' %}selected{% endif %}>Fantasy</option>
+                                <option value="mystery" {% if request.GET.category == 'mystery' %}selected{% endif %}>Mystery</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="sortSelect" class="form-label fw-semibold">Sort By</label>
+                            <select name="sort" class="form-select" id="sortSelect">
+                                <option value="latest" {% if request.GET.sort == 'latest' or not request.GET.sort %}selected{% endif %}>Newest</option>
+                                <option value="trending" {% if request.GET.sort == 'trending' %}selected{% endif %}>Trending</option>
+                                <option value="most_parts" {% if request.GET.sort == 'most_parts' %}selected{% endif %}>Most Parts</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-filter"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Filter Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                <a href="?category=" class="btn {% if not request.GET.category %}btn-primary{% else %}btn-outline-primary{% endif %} rounded-pill">
+                    All Stories
+                </a>
+                {% for value, name in category_choices %}
+                <a href="?category={{ value }}" class="btn {% if request.GET.category == value %}btn-primary{% else %}btn-outline-primary{% endif %} rounded-pill">
+                    {{ name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Stories Grid -->
+    {% if stories %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for story in stories %}
+        <div class="col">
+            <div class="card story-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-primary rounded-pill">{{ story.get_category_display }}</span>
+                        <button class="btn btn-sm btn-link text-muted p-0 like-btn">
+                            <i class="bi bi-heart"></i>
+                            <small>{{ story.total_likes|default:0 }}</small>
+                        </button>
+                    </div>
+
+                    <h5 class="card-title mb-3">
+                        <a href="{% url 'stories:story_detail' story.slug %}" class="text-decoration-none text-dark stretched-link">
+                            {{ story.title }}
+                        </a>
+                    </h5>
+
+                    <p class="card-text text-muted small mb-3">
+                        {% with first_part=story.parts.first %}
+                        {{ first_part.text|truncatewords:20 }}
+                        {% endwith %}
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                <i class="bi bi-person-fill text-primary small"></i>
+                            </div>
+                            <div class="ms-2">
+                                <small class="d-block text-muted">Started by</small>
+                                <small class="fw-semibold">
+                                    {% if story.created_by %}
+                                        {{ story.created_by.username }}
+                                    {% else %}
+                                        Anonymous
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <small class="d-block text-muted">{{ story.created_at|naturaltime }}</small>
+                            <small class="text-muted">
+                                <i class="bi bi-text-paragraph me-1"></i>
+                                {% if story.parts_count is defined %}
+                                    {{ story.parts_count }}
+                                {% else %}
+                                    {{ story.parts.count }}
+                                {% endif %}
+                                parts
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-transparent border-0 pt-0 pb-4 px-4">
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'stories:story_detail' story.slug %}" class="btn btn-sm btn-outline-primary flex-fill">
+                            Read Story
+                        </a>
+                        <a href="{% url 'stories:add_story_part' story.slug %}" class="btn btn-sm btn-primary flex-fill">
+                            Add Part
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-journal-x display-1 text-muted mb-4"></i>
+                    <h3 class="text-muted">No stories found</h3>
+                    <p class="text-muted mb-4">Be the first to create an amazing story!</p>
+                    <a href="{% url 'stories:create_story' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Create Your First Story
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Pagination -->
+    {% if stories.has_other_pages %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <nav aria-label="Stories pagination">
+                <ul class="pagination justify-content-center">
+                    {% with request.GET.urlencode as querystring %}
+                    {% if stories.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ stories.previous_page_number }}{% if querystring %}&{{ querystring|safe }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                    </li>
+                    {% endif %}
+
+                    {% for i in stories.paginator.page_range %}
+                    {% if i == stories.number %}
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ i }}</span>
+                    </li>
+                    {% elif i > stories.number|add:-3 and i < stories.number|add:3 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}{% if querystring %}&{{ querystring|safe }}{% endif %}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if stories.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ stories.next_page_number }}{% if querystring %}&{{ querystring|safe }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                    </li>
+                    {% endif %}
+                    {% endwith %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

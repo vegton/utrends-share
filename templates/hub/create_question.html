@@ -1,0 +1,333 @@
+{% extends "hub/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-info mb-3">Ask a Prediction Question</h1>
+                <p class="lead text-muted">What does the future hold? Ask the community for their predictions on upcoming events.</p>
+            </div>
+
+            <!-- Creation Card -->
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-info text-white py-4">
+                    <h3 class="mb-0 text-center"><i class="bi bi-question-circle me-2"></i>Question Details</h3>
+                </div>
+                <div class="card-body p-5">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Question Input -->
+                        <div class="mb-4">
+                            <label for="question" class="form-label fw-semibold fs-5">Your Question</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-chat-quote text-info"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0 py-3"
+                                       id="question" name="question"
+                                       placeholder="What will happen in the upcoming event?"
+                                       required>
+                            </div>
+                            <div class="form-text text-end mt-2">
+                                <span id="questionCharCount">0</span>/255 characters
+                            </div>
+                        </div>
+
+                        <!-- Category Selection -->
+                        <div class="mb-4">
+                            <label for="category" class="form-label fw-semibold fs-5">Category</label>
+                            <p class="text-muted mb-3">Choose a category that best fits your question</p>
+
+                            <div class="row g-3" id="categorySelection">
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="category" id="sports" value="sports" autocomplete="off">
+                                    <label class="btn btn-outline-info w-100 py-3 category-option" for="sports">
+                                        <i class="bi bi-trophy me-2"></i>Sports
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="category" id="politics" value="politics" autocomplete="off">
+                                    <label class="btn btn-outline-info w-100 py-3 category-option" for="politics">
+                                        <i class="bi bi-building me-2"></i>Politics
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="category" id="technology" value="technology" autocomplete="off">
+                                    <label class="btn btn-outline-info w-100 py-3 category-option" for="technology">
+                                        <i class="bi bi-cpu me-2"></i>Technology
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="category" id="entertainment" value="entertainment" autocomplete="off">
+                                    <label class="btn btn-outline-info w-100 py-3 category-option" for="entertainment">
+                                        <i class="bi bi-film me-2"></i>Entertainment
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="category" id="finance" value="finance" autocomplete="off">
+                                    <label class="btn btn-outline-info w-100 py-3 category-option" for="finance">
+                                        <i class="bi bi-graph-up me-2"></i>Finance
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="category" id="health" value="health" autocomplete="off">
+                                    <label class="btn btn-outline-info w-100 py-3 category-option" for="health">
+                                        <i class="bi bi-heart me-2"></i>Health
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% url 'stories:question_list' %}" class="btn btn-outline-secondary btn-lg px-4 me-md-2">
+                                <i class="bi bi-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-info btn-lg px-4">
+                                <i class="bi bi-question-circle me-2"></i>Ask Question
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-light py-3">
+                    <h5 class="mb-0"><i class="bi bi-lightbulb me-2"></i>Question Creation Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="icon-sm bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    <i class="bi bi-1-circle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Be Specific and Clear</h6>
+                                    <p class="mb-0 small text-muted">Ask questions that have clear outcomes and can be answered with predictions.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="icon-sm bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    <i class="bi bi-2-circle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Include a Timeframe</h6>
+                                    <p class="mb-0 small text-muted">When possible, specify when the predicted event will occur or be resolved.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="icon-sm bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    <i class="bi bi-3-circle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Choose the Right Category</h6>
+                                    <p class="mb-0 small text-muted">Selecting the appropriate category helps people find questions they're interested in.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="icon-sm bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    <i class="bi bi-4-circle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Avoid Biased Wording</h6>
+                                    <p class="mb-0 small text-muted">Frame questions neutrally to get diverse predictions from the community.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Example Questions -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-light py-3">
+                    <h5 class="mb-0"><i class="bi bi-star me-2"></i>Popular Question Examples</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-info">Sports Example</h6>
+                                    <p class="card-text small">"Who will win the next World Cup, and by what score?"</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-info">Technology Example</h6>
+                                    <p class="card-text small">"Which company will release the first commercially viable AR glasses in 2024?"</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-info">Entertainment Example</h6>
+                                    <p class="card-text small">"Which film will win Best Picture at the next Academy Awards?"</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-info">Finance Example</h6>
+                                    <p class="card-text small">"Will Bitcoin reach $100,000 by the end of next year?"</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Character count for question input
+        const questionInput = document.getElementById('question');
+        const charCount = document.getElementById('questionCharCount');
+
+        if (questionInput && charCount) {
+            questionInput.addEventListener('input', function() {
+                charCount.textContent = this.value.length;
+
+                // Change color if approaching limit
+                if (this.value.length > 240) {
+                    charCount.classList.add('text-danger');
+                } else {
+                    charCount.classList.remove('text-danger');
+                }
+            });
+        }
+
+        // Add active class to selected category
+        const categoryOptions = document.querySelectorAll('.category-option');
+        categoryOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove active class from all options
+                categoryOptions.forEach(opt => {
+                    opt.classList.remove('btn-info');
+                    opt.classList.add('btn-outline-info');
+                });
+
+                // Add active class to clicked option
+                this.classList.remove('btn-outline-info');
+                this.classList.add('btn-info');
+            });
+        });
+
+        // Form validation
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const question = document.getElementById('question').value.trim();
+                const categorySelected = document.querySelector('input[name="category"]:checked');
+
+                if (!question) {
+                    e.preventDefault();
+                    showToast('Please enter your question', 'warning');
+                    document.getElementById('question').focus();
+                    return;
+                }
+
+                if (!categorySelected) {
+                    e.preventDefault();
+                    showToast('Please select a category', 'warning');
+                    return;
+                }
+
+                if (question.length > 255) {
+                    e.preventDefault();
+                    showToast('Question must be 255 characters or less', 'warning');
+                    document.getElementById('question').focus();
+                    return;
+                }
+            });
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed bottom-0 end-0 m-3`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+
+            document.body.appendChild(toast);
+
+            // Initialize and show toast
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+
+            // Remove toast after it's hidden
+            toast.addEventListener('hidden.bs.toast', function() {
+                document.body.removeChild(toast);
+            });
+        }
+
+        // Auto-focus on question input when page loads
+        if (questionInput) {
+            questionInput.focus();
+        }
+    });
+</script>
+
+<style>
+    .category-option {
+        transition: all 0.2s ease;
+        border-radius: 12px;
+    }
+
+    .category-option:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon-sm {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+    }
+
+    .toast {
+        z-index: 9999;
+    }
+
+    .card.bg-light {
+        background-color: rgba(13, 202, 240, 0.05) !important;
+        border-left: 3px solid #0dcaf0;
+    }
+</style>
+{% endblock %}

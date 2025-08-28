@@ -1,0 +1,341 @@
+{% extends "hub/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Question Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'stories:question_list' %}">Predictions</a></li>
+                    <li class="breadcrumb-item active">{{ question.question }}</li>
+                </ol>
+            </nav>
+
+            <div class="question-header-card card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h1 class="h2 mb-2">{{ question.question }}</h1>
+                            <div class="d-flex align-items-center flex-wrap">
+                                <span class="badge bg-info fs-6 me-2 mb-2">{{ question.get_category_display }}</span>
+                                <span class="text-muted mb-2">
+                                    <i class="bi bi-clock-history me-1"></i>Asked {{ question.created_at|timesince }} ago
+                                </span>
+                                <span class="text-muted mb-2 ms-2">
+                                    <i class="bi bi-chat-square-text me-1"></i>{{ comments|length }} predictions
+                                </span>
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="questionActions" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="questionActions">
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-bookmark me-2"></i>Save question</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-share me-2"></i>Share</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-flag me-2"></i>Report</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-sm bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-semibold">By {{ question.created_by.username|default:"Anonymous" }}</p>
+                            <p class="mb-0 small text-muted">Question Creator</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Prediction Comments -->
+        <div class="col-lg-8">
+            <!-- Stats Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <h4 class="fw-bold text-info mb-1">{{ comments|length }}</h4>
+                            <p class="small text-muted mb-0">Total Predictions</p>
+                        </div>
+                        <div class="col-4 border-start border-end">
+                            <h4 class="fw-bold text-info mb-1">{{ unique_predictors }}</h4>
+                            <p class="small text-muted mb-0">Unique Predictors</p>
+                        </div>
+                        <div class="col-4">
+                            <h4 class="fw-bold text-info mb-1">{{ total_likes }}</h4>
+                            <p class="small text-muted mb-0">Total Likes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prediction Comments -->
+            <div class="prediction-timeline mb-5">
+                {% for comment in comments %}
+                <div class="prediction-card card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-light text-dark rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0 fw-semibold">{{ comment.author.username|default:"Anonymous" }}</p>
+                                    <p class="mb-0 small text-muted">{{ comment.created_at|timesince }} ago</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-sm like-btn text-muted p-1">
+                                    <i class="bi bi-heart"></i>
+                                    <small class="ms-1">{{ comment.likes_count }}</small>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="prediction-content mb-3">
+                            <p class="mb-0">{{ comment.text }}</p>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex reaction-buttons">
+                                <button class="btn btn-sm btn-outline-info me-2">
+                                    <i class="bi bi-hand-thumbs-up me-1"></i>Like
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-reply me-1"></i>Reply
+                                </button>
+                            </div>
+                            <a href="#" class="text-muted small text-decoration-none">
+                                <i class="bi bi-share me-1"></i>Share
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="card border-0 shadow-sm mb-5">
+                    <div class="card-body text-center py-5">
+                        <i class="bi bi-chat-square-text display-1 text-muted mb-4"></i>
+                        <h3 class="text-muted">No predictions yet</h3>
+                        <p class="text-muted mb-4">Be the first to share your prediction!</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Add Prediction Form -->
+            <div class="card border-0 shadow-sm sticky-top" style="top: 90px; z-index: 100;">
+                <div class="card-header bg-info text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-chat-square-quote me-2"></i>Share Your Prediction</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'stories:add_prediction_comment' question.slug %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <textarea class="form-control" name="text" rows="4" placeholder="What's your prediction? Share your thoughts in 200 characters or less..." maxlength="200" required></textarea>
+                            <div class="form-text text-end">
+                                <span id="charCount">0</span>/200 characters
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="form-text">
+                                You're predicting for <strong>{{ question.question }}</strong>
+                            </div>
+                            <button type="submit" class="btn btn-info px-4">
+                                <i class="bi bi-send me-1"></i>Share Prediction
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Top Predictors Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light py-3">
+                    <h5 class="mb-0"><i class="bi bi-trophy me-2"></i>Top Predictors</h5>
+                </div>
+                <div class="card-body">
+                    {% for predictor in top_predictors|slice:":5" %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar-sm bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="mb-0 fw-semibold">{{ predictor.author__username|default:"Anonymous" }}</p>
+                            <p class="mb-0 small text-muted">{{ predictor.count }} predictions</p>
+                        </div>
+                        <span class="badge bg-warning text-dark">#{{ forloop.counter }}</span>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted small mb-0">No predictions yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Prediction Guidelines -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light py-3">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Prediction Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex mb-3">
+                        <div class="icon-sm bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3">
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-semibold">Be specific</p>
+                            <p class="mb-0 small text-muted">Provide clear, detailed predictions</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mb-3">
+                        <div class="icon-sm bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3">
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-semibold">Support your prediction</p>
+                            <p class="mb-0 small text-muted">Explain the reasoning behind your prediction</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mb-3">
+                        <div class="icon-sm bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3">
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-semibold">Be respectful</p>
+                            <p class="mb-0 small text-muted">Respect others' opinions even if you disagree</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex">
+                        <div class="icon-sm bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3">
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-semibold">Stay on topic</p>
+                            <p class="mb-0 small text-muted">Keep predictions relevant to the question</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Questions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light py-3">
+                    <h5 class="mb-0"><i class="bi bi-question-circle me-2"></i>Related Questions</h5>
+                </div>
+                <div class="card-body">
+                    {% for related_question in related_questions|slice:":3" %}
+                    <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                        <h6 class="mb-1"><a href="{% url 'stories:question_detail' related_question.slug %}" class="text-decoration-none">{{ related_question.question }}</a></h6>
+                        <div class="d-flex align-items-center text-muted small">
+                            <span class="badge bg-secondary me-2">{{ related_question.get_category_display }}</span>
+                            <span>{{ related_question.comments.count }} predictions</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted small mb-0">No related questions found.</p>
+                    {% endfor %}
+
+                    <div class="text-center mt-3">
+                        <a href="{% url 'stories:question_list' %}?category={{ question.category }}" class="btn btn-sm btn-outline-info">View more {{ question.get_category_display }} questions</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Character count for textarea
+        const textarea = document.querySelector('textarea[name="text"]');
+        const charCount = document.getElementById('charCount');
+
+        if (textarea && charCount) {
+            textarea.addEventListener('input', function() {
+                charCount.textContent = this.value.length;
+            });
+        }
+
+        // Like button functionality
+        document.querySelectorAll('.like-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('bi-heart')) {
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill', 'text-danger');
+                    // Here you would typically send an AJAX request to the server
+                    // to record the like, then update the count
+                    const countEl = this.querySelector('small');
+                    countEl.textContent = parseInt(countEl.textContent) + 1;
+                } else {
+                    icon.classList.remove('bi-heart-fill', 'text-danger');
+                    icon.classList.add('bi-heart');
+                    const countEl = this.querySelector('small');
+                    countEl.textContent = parseInt(countEl.textContent) - 1;
+                }
+            });
+        });
+
+        // Make the form sticky on scroll
+        const formCard = document.querySelector('.sticky-top');
+        if (formCard) {
+            const originalOffsetTop = formCard.offsetTop;
+
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > originalOffsetTop) {
+                    formCard.classList.add('shadow');
+                } else {
+                    formCard.classList.remove('shadow');
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .prediction-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid #0dcaf0;
+    }
+
+    .prediction-card:hover {
+        background-color: rgba(13, 202, 240, 0.05) !important;
+        transform: translateX(5px);
+    }
+
+    .avatar-sm {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .icon-sm {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}

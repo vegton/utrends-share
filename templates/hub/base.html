@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryHub - Collaborative Storytelling Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7B68EE;
+            --primary-gradient: linear-gradient(135deg, #7B68EE 0%, #6A5ACD 100%);
+            --secondary: #FF6B6B;
+            --accent: #4ECDC4;
+            --light-bg: #F8F9FF;
+            --dark-bg: #1A1A2E;
+            --card-bg: #FFFFFF;
+            --text-dark: #2D2D48;
+            --text-light: #6C757D;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            padding-top: 80px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
+            padding: 15px 0;
+            transition: var(--transition);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-dark);
+            margin: 0 8px;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            background: rgba(123, 104, 238, 0.1);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .story-card, .question-card {
+            transition: var(--transition);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            background: var(--card-bg);
+        }
+
+        .story-card:hover, .question-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .category-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .part-card, .comment-card {
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .part-card:hover, .comment-card:hover {
+            background-color: rgba(123, 104, 238, 0.05);
+            transform: translateX(5px);
+        }
+
+        .like-btn {
+            transition: var(--transition);
+        }
+
+        .like-btn:hover {
+            color: var(--secondary) !important;
+            transform: scale(1.2);
+        }
+
+        .hero-section {
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 0 0 40px 40px;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,192C1248,192,1344,128,1392,96L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover;
+            background-position: center;
+        }
+
+        .filter-buttons .btn {
+            border-radius: 20px;
+            margin: 0 5px 10px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+            border-radius: 12px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-control, .form-select {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 1px solid rgba(123, 104, 238, 0.2);
+            transition: var(--transition);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(123, 104, 238, 0.25);
+        }
+
+        .story-content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .author-badge {
+            font-size: 0.85rem;
+            background-color: rgba(123, 104, 238, 0.1);
+            color: var(--primary);
+            border-radius: 20px;
+            padding: 4px 10px;
+        }
+
+        footer {
+            background: var(--dark-bg);
+            color: white;
+            padding: 3rem 0 1.5rem;
+            margin-top: 4rem;
+        }
+
+        footer h5 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        footer a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        footer a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        /* Animation for page transitions */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Floating animation for decorative elements */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-section p {
+                font-size: 1rem;
+            }
+
+            body {
+                padding-top: 70px;
+            }
+
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'stories:story_list' %}">
+                <i class="bi bi-journal-bookmark-fill me-2"></i>StoryHub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'stories:story_list' %}"><i class="bi bi-book me-1"></i> Stories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'stories:question_list' %}"><i class="bi bi-chat-dots me-1"></i> Predictions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'stories:create_story' %}"><i class="bi bi-plus-circle me-1"></i> Create Story</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'stories:create_question' %}"><i class="bi bi-question-circle me-1"></i> Ask Question</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    {% if user.is_authenticated %}
+                        <span class="navbar-text me-3 d-none d-md-block">Welcome, <strong>{{ user.username }}</strong></span>
+                        <a href="{% url 'account_logout' %}" class="btn btn-outline-primary btn-sm">Logout</a>
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="btn btn-outline-primary btn-sm me-2">Login</a>
+                        <a href="{% url 'account_signup' %}" class="btn btn-primary btn-sm">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content block -->
+    <main class="fade-in">
+        {% block content %}
+        <!-- Content will be injected here by child templates -->
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>StoryHub</h5>
+                    <p class="">A platform for collaborative storytelling and predictions.</p>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" class=""><i class="bi bi-twitter fs-5"></i></a>
+                        <a href="#" class=""><i class="bi bi-facebook fs-5"></i></a>
+                        <a href="#" class=""><i class="bi bi-instagram fs-5"></i></a>
+                        <a href="#" class=""><i class="bi bi-discord fs-5"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Stories</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'stories:story_list' %}">Browse Stories</a></li>
+                        <li class="mb-2"><a href="{% url 'stories:create_story' %}">Create Story</a></li>
+                        <li class="mb-2"><a href="#">Categories</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Predictions</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'stories:question_list' %}">Browse Questions</a></li>
+                        <li class="mb-2"><a href="{% url 'stories:create_question' %}">Ask Question</a></li>
+                        <li class="mb-2"><a href="#">Top Predictions</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Stay Updated</h5>
+                    <p class="">Subscribe to our newsletter for the latest stories and predictions.</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Your email" aria-label="Your email">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 bg-secondary">
+            <p class="text-center mb-0">&copy; 2025 UTrends. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Like button functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners to like buttons
+            document.querySelectorAll('.like-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    if (icon.classList.contains('bi-heart')) {
+                        icon.classList.remove('bi-heart');
+                        icon.classList.add('bi-heart-fill', 'text-danger');
+                    } else {
+                        icon.classList.remove('bi-heart-fill', 'text-danger');
+                        icon.classList.add('bi-heart');
+                    }
+                });
+            });
+
+            // Category filter functionality
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category');
+            if (category) {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    if (btn.dataset.category === category) {
+                        btn.classList.remove('btn-outline-primary');
+                        btn.classList.add('btn-primary');
+                    }
+                });
+            }
+
+            // Navbar scroll effect
+            const navbar = document.querySelector('.navbar');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.style.boxShadow = 'var(--shadow-md)';
+                    navbar.style.padding = '10px 0';
+                } else {
+                    navbar.style.boxShadow = 'var(--shadow-sm)';
+                    navbar.style.padding = '15px 0';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

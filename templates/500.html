@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Server Error - Vegton{% endblock %}
+
+{% block content %}
+<section class="py-5 text-center">
+    <div class="container">
+        <h1 class="display-4 text-warning">500 - Server Error</h1>
+        <p class="lead">Something went wrong on our end. We're already looking into it.</p>
+        <p>Please try again later. If the issue continues, feel free to contact us.</p>
+        <p><strong>Email:</strong> <a href="mailto:info@vegton.com">info@vegton.com</a></p>
+        <a href="/" class="btn btn-outline-secondary mt-3"><i class="bi bi-arrow-left-circle"></i> Return to Home</a>
+    </div>
+</section>
+{% endblock %}

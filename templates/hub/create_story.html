@@ -1,0 +1,273 @@
+{% extends "hub/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">Start a New Story</h1>
+                <p class="lead text-muted">Begin an adventure, create a mystery, or spark a romance. Your story is waiting to be told.</p>
+            </div>
+
+            <!-- Creation Card -->
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white py-4">
+                    <h3 class="mb-0 text-center"><i class="bi bi-journal-plus me-2"></i>Story Details</h3>
+                </div>
+                <div class="card-body p-5">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Title Input -->
+                        <div class="mb-4">
+                            <label for="title" class="form-label fw-semibold fs-5">Story Title</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-journal-text text-primary"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0 py-3"
+                                       id="title" name="title"
+                                       placeholder="Enter a captivating title that grabs attention"
+                                       required>
+                            </div>
+                            <div class="form-text text-end mt-2">
+                                <span id="titleCharCount">0</span>/100 characters
+                            </div>
+                        </div>
+
+                        <!-- Category Selection -->
+                        <div class="mb-4">
+                            <label for="category" class="form-label fw-semibold fs-5">Category</label>
+                            <p class="text-muted mb-3">Choose a category that best fits your story's theme</p>
+
+                            <div class="row g-3" id="categorySelection">
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="category" id="adventure" value="adventure" autocomplete="off">
+                                    <label class="btn btn-outline-primary w-100 py-3 category-option" for="adventure">
+                                        <i class="bi bi-compass me-2"></i>Adventure
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="category" id="romance" value="romance" autocomplete="off">
+                                    <label class="btn btn-outline-primary w-100 py-3 category-option" for="romance">
+                                        <i class="bi bi-heart me-2"></i>Romance
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="category" id="horror" value="horror" autocomplete="off">
+                                    <label class="btn btn-outline-primary w-100 py-3 category-option" for="horror">
+                                        <i class="bi bi-moon me-2"></i>Horror
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="category" id="comedy" value="comedy" autocomplete="off">
+                                    <label class="btn btn-outline-primary w-100 py-3 category-option" for="comedy">
+                                        <i class="bi bi-emoji-laughing me-2"></i>Comedy
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="category" id="fantasy" value="fantasy" autocomplete="off">
+                                    <label class="btn btn-outline-primary w-100 py-3 category-option" for="fantasy">
+                                        <i class="bi bi-stars me-2"></i>Fantasy
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="category" id="mystery" value="mystery" autocomplete="off">
+                                    <label class="btn btn-outline-primary w-100 py-3 category-option" for="mystery">
+                                        <i class="bi bi-question-circle me-2"></i>Mystery
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% url 'stories:story_list' %}" class="btn btn-outline-secondary btn-lg px-4 me-md-2">
+                                <i class="bi bi-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-4">
+                                <i class="bi bi-journal-plus me-2"></i>Create Story
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-light py-3">
+                    <h5 class="mb-0"><i class="bi bi-lightbulb me-2"></i>Story Creation Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="icon-sm bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    <i class="bi bi-1-circle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Catchy Titles Work Best</h6>
+                                    <p class="mb-0 small text-muted">Choose a title that sparks curiosity and invites readers to explore your story.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="icon-sm bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    <i class="bi bi-2-circle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Pick the Right Category</h6>
+                                    <p class="mb-0 small text-muted">Selecting the appropriate category helps readers find stories they'll enjoy.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="icon-sm bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    <i class="bi bi-3-circle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Start With a Strong Opening</h6>
+                                    <p class="mb-0 small text-muted">Your first story part should hook readers and set the tone for your narrative.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="icon-sm bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    <i class="bi bi-4-circle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Leave Room for Collaboration</h6>
+                                    <p class="mb-0 small text-muted">Create openings for other writers to continue and expand your story.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Character count for title input
+        const titleInput = document.getElementById('title');
+        const charCount = document.getElementById('titleCharCount');
+
+        if (titleInput && charCount) {
+            titleInput.addEventListener('input', function() {
+                charCount.textContent = this.value.length;
+
+                // Change color if approaching limit
+                if (this.value.length > 90) {
+                    charCount.classList.add('text-danger');
+                } else {
+                    charCount.classList.remove('text-danger');
+                }
+            });
+        }
+
+        // Add active class to selected category
+        const categoryOptions = document.querySelectorAll('.category-option');
+        categoryOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove active class from all options
+                categoryOptions.forEach(opt => {
+                    opt.classList.remove('btn-primary');
+                    opt.classList.add('btn-outline-primary');
+                });
+
+                // Add active class to clicked option
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-primary');
+            });
+        });
+
+        // Form validation
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const title = document.getElementById('title').value.trim();
+                const categorySelected = document.querySelector('input[name="category"]:checked');
+
+                if (!title) {
+                    e.preventDefault();
+                    showToast('Please enter a story title', 'warning');
+                    document.getElementById('title').focus();
+                    return;
+                }
+
+                if (!categorySelected) {
+                    e.preventDefault();
+                    showToast('Please select a category', 'warning');
+                    return;
+                }
+            });
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed bottom-0 end-0 m-3`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+
+            document.body.appendChild(toast);
+
+            // Initialize and show toast
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+
+            // Remove toast after it's hidden
+            toast.addEventListener('hidden.bs.toast', function() {
+                document.body.removeChild(toast);
+            });
+        }
+    });
+</script>
+
+<style>
+    .category-option {
+        transition: all 0.2s ease;
+        border-radius: 12px;
+    }
+
+    .category-option:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon-sm {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+    }
+
+    .toast {
+        z-index: 9999;
+    }
+</style>
+{% endblock %}
